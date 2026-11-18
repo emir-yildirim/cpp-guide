@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emir YILDIRIM's C/C++ Guide</title>
+<meta name="description" content="Want to write C/C++ like the creator of ENux? Well then this guide is for you.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%231a5fb4'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='14' font-weight='bold' fill='white' text-anchor='middle'%3EC++%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="website/style.css">
+<script>
+  // apply saved theme before paint to avoid a flash
+  try {
+    var t = localStorage.getItem("theme");
+    if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t);
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<nav class="sidebar" id="sidebar" aria-label="Table of contents">
+  <a class="brand" href="#top">Emir YILDIRIM's C/C++ Guide</a>
+  <p class="tagline">Write C/C++ like the creator of ENux.</p>
+  <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="nav-body">Contents</button>
+
+  <div class="nav-body" id="nav-body">
+    <h3>Contents</h3>
+    <ul class="toc">
+      <li><a href="#before-starting">Before Starting</a></li>
+      <li><a href="#header-files">Header Files</a>
+        <ul>
+          <li><a href="#pragma-once"><code>#pragma once</code> method</a></li>
+          <li><a href="#include-guards">Macro style include guards</a></li>
+        </ul>
+      </li>
+      <li><a href="#namespaces">Namespaces</a>
+        <ul>
+          <li><a href="#using-namespace"><code>using namespace</code></a></li>
+          <li><a href="#namespace-overdo">Don't overdo it</a></li>
+        </ul>
+      </li>
+      <li><a href="#oop">OOP</a></li>
+      <li><a href="#function-definition">Function Definition</a>
+        <ul>
+          <li><a href="#pointers">Pointers</a></li>
+          <li><a href="#helper-functions">Helper Functions</a></li>
+        </ul>
+      </li>
+      <li><a href="#leveraging-features">Leveraging from the Features</a>
+        <ul>
+          <li><a href="#cpp-features">C++ Features</a></li>
+          <li><a href="#gnu-extensions">GNU Extensions</a></li>
+        </ul>
+      </li>
+      <li><a href="#comments">Comments</a></li>
+      <li><a href="#systems-level">Writing Systems Level Programming</a>
+        <ul>
+          <li><a href="#check-return-values">Check every return value</a></li>
+          <li><a href="#know-syscalls">Know your system calls</a></li>
+          <li><a href="#clean-up">Clean up after yourself</a></li>
+        </ul>
+      </li>
+      <li><a href="#the-end">The End</a></li>
+    </ul>
+
+    <button class="theme-toggle" id="theme-toggle" type="button">Toggle dark mode</button>
+  </div>
+</nav>
+
+<main id="top">
+<article class="content">
+
+<h1>Emir YILDIRIM's C/C++ Guide</h1>
+<p class="lead">Want to write C/C++ like <a href="https://github.com/ENux-Distro">the creator of ENux</a>? Well then this guide is for you.</p>
+
+<!-- ============================================================ -->
+<section id="before-starting">
+<h2>Before Starting<a class="headerlink" href="#before-starting" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Next: <a href="#header-files">Header Files</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<p>This guide assumes that you have some knowledge of writing C/C++, preferably systems level C/C++.</p>
+
+<div class="admonition">
+  <p class="admonition-title">Note</p>
+  <p>This guide isn't a C/C++ standard, it's only my opinion. You can write however you want.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="header-files">
+<h2>Header Files<a class="headerlink" href="#header-files" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Next: <a href="#namespaces">Namespaces</a></span><span>Previous: <a href="#before-starting">Before Starting</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<p>If you've written, or read some C/C++ code, then you're familiar with what header files are. You're also probably familiar with</p>
+
+<p>The <code>#pragma once</code> method</p>
+<pre><code class="lang-cpp">#pragma once</code></pre>
+
+<p>The macro style include guards</p>
+<pre><code class="lang-cpp">#ifndef FOO
+#define FOO
+
+// some foo code
+
+#endif // FOO</code></pre>
+
+<p>But which one should you use?</p>
+
+<h3 id="pragma-once"><code>#pragma once</code> method<a class="headerlink" href="#pragma-once" title="Permalink to this section">¶</a></h3>
+
+<p>The <code>#pragma once</code> method is a modern approach in header files. It's a one liner, and most modern compilers support it.</p>
+
+<p>This method can be used for codebases that target modern compilers, where you control the build environment.</p>
+
+<p>But if you're writing open source code, distributed to unknown environments, then this method could work on user A, but could fail on user B.</p>
+
+<h3 id="include-guards">The macro style include guards method<a class="headerlink" href="#include-guards" title="Permalink to this section">¶</a></h3>
+
+<p>The macro style include guards method is the safest version of header definition, as it works almost everywhere.</p>
+
+<p>This method can be used for open source code, distributed to unknown environments.</p>
+
+<p>But, if you're too lazy to write 3 more lines of code, and know the specifics of how the code will be controlled, this method isn't for you.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Next: <a href="#oop">OOP</a></span><span>Previous: <a href="#header-files">Header Files</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<p>A namespace is a way to group related code together under a name, it helps you avoid naming conflicts when your code grows or when you use code from multiple sources.</p>
+
+<p>Let's say you're writing a package manager, and you have an <code>install()</code> function. Then you pull in a library that also has an <code>install()</code> function. Now the compiler doesn't know which one you mean.</p>
+
+<p>That's where namespaces come in:</p>
+
+<pre><code class="lang-cpp">namespace pkg {
+  int install(char *package_name) {
+    // Installs the package
+  }
+}
+
+int main(int argc, char **argv) {
+  pkg::install(argv[1]);
+  return 0;
+}</code></pre>
+
+<p>Now everyone knows that <code>install()</code> belongs to <code>pkg</code>, and it won't fight with anyone else's <code>install()</code>.</p>
+
+<h3 id="using-namespace"><code>using namespace</code><a class="headerlink" href="#using-namespace" title="Permalink to this section">¶</a></h3>
+
+<p>You've probably seen this at the top of a lot of C++ files:</p>
+
+<pre><code class="lang-cpp">using namespace std;</code></pre>
+
+<p>It saves you from typing <code>std::</code> every time, but it dumps everything from <code>std</code> into your code, and that's how the naming conflicts come back.</p>
+
+<h4>Examples</h4>
+
+<div class="example good">
+<span class="label">Good</span>
+<pre><code class="lang-cpp">std::cout &lt;&lt; "Hello" &lt;&lt; std::endl;</code></pre>
+</div>
+
+<div class="example bad">
+<span class="label">Bad</span>
+<pre><code class="lang-cpp">// in a header file
+using namespace std;</code></pre>
+</div>
+
+<p>Never write <code>using namespace</code> in a header file, because every file that includes your header gets it too, whether they want it or not. If you're really lazy to write <code>std::</code>, only do it inside a <code>.cpp</code> file, or inside a function.</p>
+
+<h3 id="namespace-overdo">Don't overdo it<a class="headerlink" href="#namespace-overdo" title="Permalink to this section">¶</a></h3>
+
+<p>Just like OOP, just because C++ has namespaces, doesn't mean you should nest them 5 levels deep.</p>
+
+<div class="example bad">
+<span class="label">Bad</span>
+<pre><code class="lang-cpp">program::core::package::manager::install::run();</code></pre>
+</div>
+
+<p>One or two levels is enough for almost every project.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="oop">
+<h2>OOP<a class="headerlink" href="#oop" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Next: <a href="#function-definition">Function Definition</a></span><span>Previous: <a href="#namespaces">Namespaces</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<p>OOP, standing for object oriented programming, is one of the reasons why I switched to C++ from C. It helps you organize and make your code prettier.
+But, when do you actually need this?</p>
+
+<p>Let's say you're writing a container, and installation of every distribution is different from each other.
+You don't want to write the same operations every time, so you create a class of each distro, like this:</p>
+
+<div class="example good">
+<span class="label">Good</span>
+<pre><code class="lang-cpp">class distroX {
+
+public:
+
+  static void install() {
+    // Installs distroX
+  }
+
+  static void remove() {
+    // Removes distroX
+  }
+
+};
+
+int main(int argc, char **argv) {
+  if (strcmp(argv[1], "install") == 0 &amp;&amp; strcmp(argv[2], "distroX") == 0) {
+    distroX::install();
+  }
+
+  return 0;
+}</code></pre>
+</div>
+
+<p>Look, your code looks prettier, more organized. This is a good way to use OOP. But a bad way is:</p>
+
+<div class="example bad">
+<span class="label">Bad</span>
+<pre><code class="lang-cpp">class calculator {
+
+public:
+
+  static int addition(int a, int b) {
+    return a + b;
+  }
+
+};
+
+int main() {
+  calculator::addition(1, 2);
+}</code></pre>
+</div>
+
+<p>Just because C++ has OOP, doesn't mean you should use it everywhere. The addition function could've been simplified to one helper function.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="function-definition">
+<h2>Function Definition<a class="headerlink" href="#function-definition" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Next: <a href="#leveraging-features">Leveraging from the Features</a></span><span>Previous: <a href="#oop">OOP</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<h3 id="pointers">Pointers<a class="headerlink" href="#pointers" title="Permalink to this section">¶</a></h3>
+
+<p>The pointer symbols (<code>*</code> and <code>&amp;</code>) should be written to the <strong>LEFT SIDE OF THE VARIABLE NAME</strong>, not the <strong>RIGHT SIDE OF THE POINTER TYPE</strong>.</p>
+
+<h4>Examples</h4>
+
+<div class="example good">
+<span class="label">Good</span>
+<pre><code class="lang-cpp">char good_char;
+char *good_pointer = &amp;good_char;
+char &amp;another_good_pointer = good_char;</code></pre>
+</div>
+
+<div class="example bad">
+<span class="label">Bad</span>
+<pre><code class="lang-cpp">char bad_char;
+char* bad_pointer = &amp;bad_char;
+char&amp; another_bad_pointer = bad_char;</code></pre>
+</div>
+
+<h3 id="helper-functions">Helper Functions<a class="headerlink" href="#helper-functions" title="Permalink to this section">¶</a></h3>
+
+<p>Your helper function must tell you what it does. Don't rename it as <code>tmp_helperfunc_1</code>, because the next developer would have a hard time figuring it out.</p>
+
+<h4>Examples</h4>
+
+<div class="example good">
+<span class="label">Good</span>
+<pre><code class="lang-cpp">int install_packages(char *package_name) {
+  // Brilliant code
+}</code></pre>
+</div>
+
+<div class="example bad">
+<span class="label">Bad</span>
+<pre><code class="lang-cpp">int tmp14(char *argument13) {
+  // Brilliant code
+}</code></pre>
+</div>
+
+<p>If you're writing a helper function that wraps a library function with more error checking, you can name it as <code>&lt;library_function&gt;2</code>,
+or if the function already has a number, you can do <code>&lt;library_function&gt;[number + 1]</code>.</p>
+
+<h4>Example</h4>
+
+<pre><code class="lang-cpp">void *malloc2(size_t size) {
+  void *ptr = malloc(size);
+  if (ptr == NULL) {
+    perror("malloc");
+    exit(1);
+  }
+  return ptr;
+}</code></pre>
+</section>
+
+<!-- ============================================================ -->
+<section id="leveraging-features">
+<h2>Leveraging from the Features<a class="headerlink" href="#leveraging-features" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Next: <a href="#comments">Comments</a></span><span>Previous: <a href="#function-definition">Function Definition</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<h3 id="cpp-features">C++ Features<a class="headerlink" href="#cpp-features" title="Permalink to this section">¶</a></h3>
+
+<p>C++ offers many incredible features, like OOP, strings, safe pointers and etc. But you should only use them when you know the internals of that function.</p>
+
+<h4>Examples</h4>
+
+<pre><code class="lang-cpp">std::filesystem::create_directory("dir"); // this is the same as mkdir("dir");
+std::filesystem::rename("file.txt", "File.txt"); // this is the same as rename("file.txt", "File.txt");
+std::filesystem::create_symlink("file.txt", "File.txt"); // this is the same as symlink("file.txt", "File.txt");</code></pre>
+
+<h3 id="gnu-extensions">GNU Extensions<a class="headerlink" href="#gnu-extensions" title="Permalink to this section">¶</a></h3>
+
+<p>GNU extensions are non-standard language features added by GCC to C and C++ beyond the official ISO standards.</p>
+
+<p>GNU extensions sometimes allow you to write simple one liners that the normal ISO standards wouldn't allow.</p>
+
+<div class="admonition">
+  <p class="admonition-title">Note</p>
+  <p>Only use GNU extensions if the code requires GCC and not any other compiler like Clang.</p>
+</div>
+
+<h4>Example</h4>
+
+<pre><code class="lang-cpp">execvp("foo", (char *[]){"foo", NULL}); // ISO standard C++ doesn't allow this, but GNU extensions do</code></pre>
+
+<p>This example uses a compound literal, which is a GNU extension in C++. It can't compile on ISO standard C++ compilers, or with <code>-pedantic-errors</code>.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="comments">
+<h2>Comments<a class="headerlink" href="#comments" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Next: <a href="#systems-level">Writing Systems Level Programming</a></span><span>Previous: <a href="#leveraging-features">Leveraging from the Features</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<p>Comments explain what the code does. Use them, but don't overuse them.</p>
+
+<h4>Examples</h4>
+
+<div class="example good">
+<span class="label">Good</span>
+<pre><code class="lang-cpp">int calculator(int a, int b) {
+  std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+  // Only adding this as a prank
+  reboot(RB_AUTOBOOT);
+}</code></pre>
+</div>
+
+<div class="example bad">
+<span class="label">Bad</span>
+<pre><code class="lang-cpp">int calculator(int a, int b) {
+  // A calculator is a physical device, software program, or person that performs mathematical calculations and numerical operations.
+  // This calculator will get 2 integer arguments
+  // an integer any whole number; positive, negative, or zero—that has no fractional or decimal part
+  // There are 2 types integers, unsigned and signed integers, our calculator takes in a signed integer
+  std::cout &lt;&lt; a + b &lt;&lt; std::endl;
+  // The calculator will print the result of a + b to the standard output using cout, and will add a new line using endl.
+  // These 2 library functions are in the iostream.h header file, in the std:: namespace
+  reboot(RB_AUTOBOOT);
+  // This simple yet dangerous prank reboots your computer. the reboot library functions wraps int syscall(SYS_reboot, int magic, int magic2, int op, void *arg)
+}</code></pre>
+</div>
+
+<p>Look at the good example: 4 lines of code and one line of comment. The bad example has the same 4 lines of code, buried under 7 lines of comments. Use comments, but don't overuse them.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="systems-level">
+<h2>Writing Systems Level Programming<a class="headerlink" href="#systems-level" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Next: <a href="#the-end">The End</a></span><span>Previous: <a href="#comments">Comments</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<p>Systems level programming is writing the code that sits close to the kernel, like init systems, package managers, shells and drivers. This is where C/C++ really shines, but it's also where a small mistake can break the whole system.</p>
+
+<h3 id="check-return-values">Check every return value<a class="headerlink" href="#check-return-values" title="Permalink to this section">¶</a></h3>
+
+<p>In systems programming, almost every function can fail. Your disk can be full, your file can be missing, your process can run out of memory. If you don't check the return value, you'll never know.</p>
+
+<h4>Examples</h4>
+
+<div class="example good">
+<span class="label">Good</span>
+<pre><code class="lang-cpp">int fd = open("/etc/foo.conf", O_RDONLY);
+if (fd == -1) {
+  perror("open");
+  return 1;
+}</code></pre>
+</div>
+
+<div class="example bad">
+<span class="label">Bad</span>
+<pre><code class="lang-cpp">int fd = open("/etc/foo.conf", O_RDONLY);
+read(fd, buffer, sizeof(buffer));</code></pre>
+</div>
+
+<p>This is also where the <code>&lt;library_function&gt;2</code> helpers from the <a href="#helper-functions">Helper Functions</a> section are useful. Write the error checking once, and use it everywhere.</p>
+
+<h3 id="know-syscalls">Know your system calls<a class="headerlink" href="#know-syscalls" title="Permalink to this section">¶</a></h3>
+
+<p>Remember the <a href="#cpp-features">C++ Features</a> section? <code>std::filesystem::create_directory</code> is just <code>mkdir</code> under the hood. When you're writing systems level code, you should know which system call your code ends up making, because that's what actually runs on the machine.</p>
+
+<p>If you don't know, <code>strace</code> will tell you:</p>
+
+<pre><code class="lang-sh">strace ./your_program</code></pre>
+
+<h3 id="clean-up">Clean up after yourself<a class="headerlink" href="#clean-up" title="Permalink to this section">¶</a></h3>
+
+<p>If you open it, close it. If you allocate it, free it. If you fork it, wait for it.</p>
+
+<div class="example good">
+<span class="label">Good</span>
+<pre><code class="lang-cpp">pid_t pid = fork();
+if (pid == 0) {
+  execvp("foo", (char *[]){"foo", NULL});
+  _exit(1);
+}
+waitpid(pid, NULL, 0);</code></pre>
+</div>
+
+<div class="example bad">
+<span class="label">Bad</span>
+<pre><code class="lang-cpp">fork();
+execvp("foo", (char *[]){"foo", NULL});</code></pre>
+</div>
+
+<p>The bad example replaces both the parent and the child with <code>foo</code>, and nobody waits for anything.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="the-end">
+<h2>The End<a class="headerlink" href="#the-end" title="Permalink to this section">¶</a></h2>
+<div class="node-nav"><span>Previous: <a href="#systems-level">Writing Systems Level Programming</a></span><span>Up: <a href="#top">Top</a></span></div>
+
+<p>Thank you everyone for reading Emir YILDIRIM's C/C++ Guide, and I'll see you later.</p>
+</section>
+
+<footer>
+  Emir YILDIRIM's C/C++ Guide &middot; <a href="https://github.com/ENux-Distro">ENux-Distro on GitHub</a>
+</footer>
+
+</article>
+</main>
+
+<script src="website/script.js"></script>
+</body>
+</html>
